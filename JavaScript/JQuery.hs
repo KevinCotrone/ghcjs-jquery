@@ -220,6 +220,7 @@ data AjaxSettings = AjaxSettings { asContentType :: Text
                                  , asCache       :: Bool
                                  , asIfModified  :: Bool
                                  , asMethod      :: Method
+                                 , asDataType    :: Text
                                  } deriving (Ord, Eq, Show, Typeable)
 
 data AjaxResult = AjaxResult { arStatus :: Int
@@ -227,10 +228,10 @@ data AjaxResult = AjaxResult { arStatus :: Int
                              } deriving (Ord, Eq, Show, Typeable)
 
 instance Default AjaxSettings where
-  def = AjaxSettings "application/x-www-form-urlencoded; charset=UTF-8" True False GET
+  def = AjaxSettings "application/x-www-form-urlencoded; charset=UTF-8" True False GET "text"
 
 instance ToJSRef AjaxSettings where
-  toJSRef (AjaxSettings ct cache ifMod method) = do
+  toJSRef (AjaxSettings ct cache ifMod method dataType) = do
     o <- newObj
     let (.=) :: Text -> JSRef a -> IO ()
         p .= v = F.setProp p v o
@@ -238,7 +239,7 @@ instance ToJSRef AjaxSettings where
     "ifModified"  .= toJSBool ifMod
     "cache"       .= toJSBool cache
     "contentType" .= toJSString ct
-    "dataType"    .= ("text" :: JSString)
+    "dataType"    .= toJSString dataType
     return o
 
 instance ToJSString Method where
